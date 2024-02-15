@@ -2,7 +2,7 @@
 xhost +
 
 # Dockerコンテナを起動し、現在のユーザーのDISPLAY環境変数とX11のソケットを渡す
-sudo docker run -it --rm \
+sudo docker run --gpus all -it --rm \
   --runtime nvidia \
   --shm-size=1g \
   -v $(pwd):/workspace \

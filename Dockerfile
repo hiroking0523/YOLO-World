@@ -24,6 +24,10 @@ RUN rm -f /usr/bin/python && \
     rm -f /usr/bin/python3 && \
     ln -s /usr/bin/python3.8 /usr/bin/python3
 
+# pipでcv2がインストールされた場合に競合してしまうので無効化する
+RUN mv /usr/lib/python3.8/dist-packages/cv2 /usr/lib/python3.8/dist-packages/cv2.bak
+RUN mv /usr/local/lib/python3.8/dist-packages/cv2 /usr/local/lib/python3.8/dist-packages/cv2.
+
 # その他の必要なパッケージをインストール
 RUN pip install \
     openmim \
@@ -32,19 +36,24 @@ RUN pip install \
     addict \
     yapf \
     numpy \
-    opencv-python \
     supervision==0.18.0 \
     ftfy \
     regex \
     pot \
     sentencepiece \
-    tokenizers
+    tokenizers \
+    mmengine
 
 # 特定のtorchと関連ライブラリをインストール
 RUN pip install torch==1.11.0 torchvision==0.12.0 torchaudio==0.11.0
 
 # 特定のmmyoloとmmdetをインストール
 RUN pip install mmyolo==0.6.0 mmdet==3.0.0
+RUN pip install mmcv==2.0.0rc4 -f https://download.openmmlab.com/mmcv/dist/cu111/torch1.9/index.html
+
+# ゴリ押し
+RUN pip install -U typing_extensions
+RUN pip install --upgrade numpy
 
 # yolo-worldをインストール
 RUN git clone https://github.com/hiroking0523/YOLO-World.git /YOLO-World

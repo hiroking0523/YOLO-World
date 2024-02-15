@@ -39,6 +39,13 @@ def parse_args():
     args = parser.parse_args()
     return args
 
+def draw_bounding_boxes(image, detections, labels):
+    for i, det in enumerate(detections.xyxy):
+        x1, y1, x2, y2 = map(int, det)
+        cv2.rectangle(image, (x1, y1), (x2, y2), (0, 255, 0), 2)
+        if labels and len(labels) > i:
+            cv2.putText(image, labels[i], (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (36,255,12), 2)
+    return image
 
 def run_image(runner,
               image,
@@ -80,8 +87,9 @@ def run_image(runner,
 
     image = np.array(image)
     image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR) # Convert RGB to BGR
-    image = BOUNDING_BOX_ANNOTATOR.annotate(image, detections)
-    image = LABEL_ANNOTATOR.annotate(image, detections, labels=labels)
+    # image = BOUNDING_BOX_ANNOTATOR.annotate(image, detections)
+    # image = LABEL_ANNOTATOR.annotate(image, detections, labels=labels)
+    image = draw_bounding_boxes(image, detections, labels)
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB) # Convert BGR to RGB
     image = Image.fromarray(image)
     return image
@@ -124,8 +132,10 @@ def demo(runner, args):
                                     interactive=True,
                                     label='NMS Threshold')
             with gr.Column(scale=0.7):
-                output_image = gr.Image(lines=20,
-                                        type='pil',
+                # output_image = gr.Image(lines=20,
+                #                         type='pil',
+                #                         label='output image')
+                output_image = gr.Image(type='pil',
                                         label='output image')
 
         submit.click(partial(run_image, runner),
